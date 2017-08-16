@@ -7,12 +7,22 @@
 //
 
 import UIKit
+import WebKit
+//import Alamofire
 
-class ViewController: UIViewController {
+class ViewController: UIViewController,
+    UISearchBarDelegate{
 
+    @IBOutlet weak var introText: UITextView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        introText.text = "This app grabs all the coin pairs from cryptopia, and displays the selected coin's data."
+        
+              
+        
     }
 
     override func didReceiveMemoryWarning() {
