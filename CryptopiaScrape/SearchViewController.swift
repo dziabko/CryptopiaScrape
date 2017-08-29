@@ -21,6 +21,10 @@ class SearchViewController: UITableViewController, UISearchResultsUpdating{
     //MapTable Storing id-pair table
     var idHashMap = NSMapTable<NSString, NSString>()
     
+    //Array storing symbols
+    var symbolHashMap = NSMapTable<NSString, NSString>()
+    var basesymbolHashMap = NSMapTable<NSString, NSString>()
+    
     
     
     
@@ -116,12 +120,21 @@ class SearchViewController: UITableViewController, UISearchResultsUpdating{
                                 self.pairData.append(coinCurrency! + " : " + coinLabel!)
                                 
                                 
+                                
                                 //Reload table with new coin
                                 self.tableView.reloadData()
                                 
                                 //Coin's ID for coin's data request
                                 var coinID: NSString = (String (coins["Id"] as! Int)) as NSString
                                 print(coinID)
+                                
+                                
+                                //Storing the symbols with coin's name
+                                let symbol = coins["Symbol"] as? String
+                                self.symbolHashMap.setObject(symbol as! NSString, forKey: (coinCurrency! + " : " + coinLabel!) as NSString)
+                                let baseSymbol = coins["BaseSymbol"] as? String
+                                self.basesymbolHashMap.setObject(baseSymbol as! NSString, forKey: (coinCurrency! + " : " + coinLabel!) as NSString)
+                                
                                 
                                 //Add coin's ID to a hashtable with coin's name
                                 self.idHashMap.setObject(coinID, forKey: (coinCurrency! + " : " + coinLabel!) as NSString)
@@ -183,7 +196,7 @@ class SearchViewController: UITableViewController, UISearchResultsUpdating{
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("PREPARE SEGUE")
-        let navVC = segue.destination as! UINavigationController
+        let navVC = segue.destination// as! UINavigationController
         
         //Current Selected row
         let  row = (sender as! NSIndexPath).row
@@ -199,13 +212,19 @@ class SearchViewController: UITableViewController, UISearchResultsUpdating{
         }
         
         //Receiving View Controller
-        let receiverVC = navVC.topViewController as! AddCoinViewController
+        let receiverVC = navVC as! AddCoinViewController  //.topViewController as! AddCoinViewController
+        
+        
         //Passing data to next View
         receiverVC.pairData = pairData2
         let nsPairData2 = pairData2 as NSString
         print(nsPairData2)
         print(idHashMap.object(forKey: nsPairData2) as! String)
+        
+        //Setting the ReceiverVC pairID & symbol
         receiverVC.pairID = idHashMap.object(forKey: (pairData2 as NSString)) as! String
+        receiverVC.symbol = symbolHashMap.object(forKey: (pairData2 as NSString)) as! String
+        receiverVC.baseSymbol = basesymbolHashMap.object(forKey: (pairData2 as NSString)) as! String
     }
     
     

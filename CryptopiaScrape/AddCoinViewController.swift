@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 class AddCoinViewController: UIViewController {
 
@@ -23,6 +24,16 @@ class AddCoinViewController: UIViewController {
     //Coin pair, and ID
     var pairData: String = ""
     var pairID: String = ""
+    var askPriceVariable: Double = 0.0
+    var symbol: String = ""
+    var baseSymbol: String = ""
+    
+    //BaseSymbol Hashmap
+    var baseHashMap = ["USDT" : "$",
+                       "NZDT" : "$",
+                       "BTC" : "฿",
+                       "LTC" : "Ł",
+                       "DOGE" : "Ð"]
     
     //Cancel button pressed
     @IBAction func cancel(_ sender: Any) {
@@ -32,14 +43,12 @@ class AddCoinViewController: UIViewController {
     //Prepare coin label before view controller loads
     override func viewWillAppear(_ animated: Bool) {
         coindataTextView.text = pairData
+        
     }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
         
         
         print(pairData)
@@ -86,19 +95,30 @@ class AddCoinViewController: UIViewController {
                     
                     print(data2)
                     
+                    var baseSymbol = self.baseHashMap[self.baseSymbol]!
+                    
                     //Label Changing needs to be done on the main thread
                     DispatchQueue.main.async {
                         //High and Low Values
-                        var coinHigh = data2["High"] as! Double
-                        self.high.text = "\(coinHigh)"
-                        var coinLow = data2["Low"] as! Double
-                        self.low.text = "\(coinLow)"
+                        let coinHigh = data2["High"] as! Double
+                        self.high.text = baseSymbol + String(format: "%.8f", coinHigh)
+                        let coinLow = data2["Low"] as! Double
+                        self.low.text = baseSymbol + String(format: "%.8f", coinLow)
                         
-                        //Other
-                        self.bidPrice.text = "\(data2["BidPrice"] as! Float)"
-                        self.askPrice.text = "\(data2["AskPrice"] as! Float)"
-                        self.volume.text = "\(data2["Volume"] as! Float)"
-                        self.change.text = "\(data2["Change"] as! Double)"
+                        
+                        
+                        print(String(format: "%.8f", coinHigh))
+                        //Other coin data
+                        let coinBid = data2["BidPrice"] as! Float
+                        let coinAsk = data2["AskPrice"] as! Float
+                        let vol = data2["Volume"] as! Float
+                        let change = data2["Change"] as! Double
+                        self.bidPrice.text = baseSymbol + String(format: "%.8f", coinBid)
+                        self.askPrice.text = baseSymbol + String(format: "%.8f", coinAsk)
+                        self.volume.text = baseSymbol + String(format: "%.8f", coinLow)
+                        self.change.text = "\(data2["Change"] as! Double)" + "%"
+                        
+                        self.askPriceVariable = Double(coinAsk)
                     }
                     
                     
@@ -111,6 +131,29 @@ class AddCoinViewController: UIViewController {
             completion(labelArray)
         }
         task.resume()
+    }
+    
+    
+    //Adding the coin to table
+    @IBAction func unwindTwice(_ sender: Any) {
+        //Get instance of storyboard
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        
+        //Create the new coin instance to be added
+        guard let newCoin = Coin(coinSymbol: symbol, coinBaseSymbol: baseSymbol, coinPrice: askPriceVariable) else{
+            fatalError("T")
+        }
+        print("UNWINDING")
+        
+        //Get the HomePageController
+        let old = self.navigationController?.viewControllers
+        let HomePageViewController = old![0] as! HomePageController
+        
+        //Add coin to the home page
+        HomePageViewController.coins += [newCoin]
+        
+        //Pop view controllers to get to home page
+        let homePage = self.navigationController?.popToRootViewController(animated: true)
     }
     
     
