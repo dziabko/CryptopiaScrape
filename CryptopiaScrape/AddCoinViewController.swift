@@ -20,6 +20,7 @@ class AddCoinViewController: UIViewController {
     @IBOutlet weak var askPrice: UILabel!
     @IBOutlet weak var volume: UILabel!
     @IBOutlet weak var change: UILabel!
+    @IBOutlet weak var lastPrice: UILabel!
     
     //Coin pair, and ID
     var pairData: String = ""
@@ -113,9 +114,11 @@ class AddCoinViewController: UIViewController {
                         let coinAsk = data2["AskPrice"] as! Float
                         let vol = data2["Volume"] as! Float
                         let change = data2["Change"] as! Double
+                        let lastPrice = data2["LastPrice"] as! Float
                         self.bidPrice.text = baseSymbol + String(format: "%.8f", coinBid)
                         self.askPrice.text = baseSymbol + String(format: "%.8f", coinAsk)
                         self.volume.text = baseSymbol + String(format: "%.8f", coinLow)
+                        self.lastPrice.text = baseSymbol + String(format: "%.8f", lastPrice)
                         self.change.text = "\(data2["Change"] as! Double)" + "%"
                         
                         self.askPriceVariable = Double(coinAsk)

@@ -18,7 +18,7 @@ class HomePageController: UITableViewController {
                        "BTC" : "฿",
                        "LTC" : "Ł",
                        "DOGE" : "Ð"]
-        
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,15 +75,55 @@ class HomePageController: UITableViewController {
         return cell
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //Perform the Segue to next page
+        print("DID SELECT ROW TABLEVIEW")
+        performSegue(withIdentifier: "CoinDetailSegue", sender: indexPath)
     }
-    */
-
+    
+    
+    
+    //MARK: ISSUE
+    //Runs Prepare
+    //RUNS didSelect tablerow
+    //Then prepare again
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("TEST1")
+        if (segue.identifier == "CoinDetailSegue"){
+            print("PREPARE SEGUE")
+            let navVC = segue.destination// as! UINavigationController
+            
+            //Current Selected row
+            let  row = (sender as! NSIndexPath).row
+            //var pairData2
+            
+            var pairData2 = coins[row]
+            
+            //Receiving View Controller
+            let receiverVC = navVC as! CoinPageViewController  //.topViewController as! AddCoinViewController
+            
+            
+            //Passing data to next View
+            receiverVC.pairData = pairData2.coinSymbol + "_" + pairData2.coinBaseSymbol
+            
+            
+            //Setting the ReceiverVC pairID & symbol
+            receiverVC.pairID = pairData2.coinSymbol
+            receiverVC.symbol = pairData2.coinSymbol
+            receiverVC.baseSymbol = pairData2.coinBaseSymbol
+        }
+    }
+    
+    /*
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
